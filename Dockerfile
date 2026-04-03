@@ -7,15 +7,14 @@ RUN apt install software-properties-common -y
 RUN add-apt-repository ppa:deadsnakes/ppa -y
 RUN apt update -y && apt install -y python3.12 python3.12-venv python3.12-dev
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
-
-RUN mkdir -p /etc/apt/keyrings
-RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
-RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
-RUN apt update -y && apt install -y google-chrome-stable
-
+RUN add-apt-repository ppa:mozillateam/ppa -y
+RUN echo 'Package: *' >> /etc/apt/preferences.d/mozilla-firefox
+RUN echo 'Pin: release o=LP-PPA-mozillateam' >> /etc/apt/preferences.d/mozilla-firefox
+RUN echo 'Pin-Priority: 1001' >> /etc/apt/preferences.d/mozilla-firefox
+RUN echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:jammy";' | tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+RUN apt update -y && apt install -y firefox
 RUN apt update -y && apt install -y xubuntu-icon-theme
 RUN touch /root/.Xauthority
 EXPOSE 5901
 EXPOSE 6080
-CMD bash -c "vncserver -localhost no -SecurityTypes None -geometry 1024x768 --I-KNOW-THIS-IS-INSECURE && openssl req -new -subj \"/C=JP\" -x509 -days 365 -nodes -out self.pem -keyout self.pem && websockify -D --web=/usr/share/novnc/ --cert=self.pem 6080 localhost:5901 && tail -f /dev/null"
+CMD bash -c "vncserver -localhost no -SecurityTypes None -geometry 1024x768 --I-KNOW-THIS-IS-INSECURE && openssl req -new -subj "/C=JP" -x509 -days 365 -nodes -out self.pem -keyout self.pem && websockify -D --web=/usr/share/novnc/ --cert=self.pem 6080 localhost:5901 && tail -f /dev/null"
