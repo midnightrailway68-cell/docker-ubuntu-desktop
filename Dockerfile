@@ -10,7 +10,7 @@ RUN echo 'Pin: release o=LP-PPA-mozillateam' >> /etc/apt/preferences.d/mozilla-f
 RUN echo 'Pin-Priority: 1001' >> /etc/apt/preferences.d/mozilla-firefox
 RUN echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:jammy";' | tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
 RUN apt update -y && apt install -y firefox
-RUN apt update -y && apt install -y python3.12 python3.12-venv python3.12-dev
+RUN add-apt-repository ppa:deadsnakes/ppa -y && apt update -y && apt install -y python3.12
 RUN apt update -y && apt install -y xubuntu-icon-theme
 RUN touch /root/.Xauthority
 EXPOSE 5901
